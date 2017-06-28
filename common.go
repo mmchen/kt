@@ -79,7 +79,7 @@ func print(in <-chan printContext, pretty bool) {
 	for {
 		ctx := <-in
 		if buf, err = marshal(ctx.output); err != nil {
-			failf("failed to marshal output %#v, err=%v", ctx.output, err)
+			fmt.Printf("%#v\n", ctx.output)
 		}
 
 		fmt.Println(string(buf))
