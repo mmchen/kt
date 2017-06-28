@@ -34,7 +34,7 @@ type groupCmd struct {
 type group struct {
 	Name    string                `json:"name"`
 	Topic   string                `json:"topic,omitempty"`
-	Offsets map[int32]groupOffset `json:"offsets,omitempty"`
+	Offsets map[string]groupOffset `json:"offsets,omitempty"`
 }
 
 type groupOffset struct {
@@ -119,7 +119,7 @@ func (cmd *groupCmd) run(args []string, q chan struct{}) {
 }
 
 func (cmd *groupCmd) printGroupTopicOffset(out chan printContext, grp, top string) {
-	target := group{Name: grp, Topic: top, Offsets: map[int32]groupOffset{}}
+	target := group{Name: grp, Topic: top, Offsets: map[string]groupOffset{}}
 	results := make(chan groupOffsetResult)
 	done := make(chan struct{})
 	parts := cmd.partitions
@@ -137,7 +137,7 @@ awaitGroupOffsets:
 	for {
 		select {
 		case res := <-results:
-			target.Offsets[res.partition] = groupOffset{Offset: res.offset, Lag: res.lag}
+			target.Offsets[fmt.Sprint(res.partition)] = groupOffset{Offset: res.offset, Lag: res.lag}
 		case <-done:
 			break awaitGroupOffsets
 		}
